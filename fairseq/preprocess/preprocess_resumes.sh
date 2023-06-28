@@ -12,14 +12,14 @@ echo "... "
 
 echo "Preprocessing resumes..."
 fairseq-preprocess \
-  --only-source \
-  --trainpref $RESUME_DATA_DIR/train.job \
-  --validpref $RESUME_DATA_DIR/valid.job \
-  --testpref $RESUME_DATA_DIR/test.job \
-  --destdir $BINARY_DATA_DIR/resumes/job \
-  --workers 60
+    --only-source \
+    --trainpref $RESUME_DATA_DIR/train.job \
+    --validpref $RESUME_DATA_DIR/valid.job \
+    --testpref $RESUME_DATA_DIR/test.job \
+    --destdir $BINARY_DATA_DIR/resumes/job \
+    --workers 60
 echo "...done."
- 
+
 echo "Preprocessing years..."
 fairseq-preprocess \
     --only-source \
@@ -30,13 +30,13 @@ fairseq-preprocess \
     --workers 60
 echo "...done."
 
-echo "Preprocessing gender..."
+echo "Preprocessing education..."
 fairseq-preprocess \
     --only-source \
-    --trainpref $RESUME_DATA_DIR/train.gender \
-    --validpref $RESUME_DATA_DIR/valid.gender \
-    --testpref $RESUME_DATA_DIR/test.gender \
-    --destdir $BINARY_DATA_DIR/resumes/gender \
+    --trainpref $RESUME_DATA_DIR/train.education \
+    --validpref $RESUME_DATA_DIR/valid.education \
+    --testpref $RESUME_DATA_DIR/test.education \
+    --destdir $BINARY_DATA_DIR/resumes/education \
     --workers 60
 echo "...done."
 

@@ -31,6 +31,11 @@ from omegaconf import DictConfig, OmegaConf, open_dict
 
 logger = logging.getLogger(__name__)
 
+try:                                                                                                 
+    import wandb                                                                                      
+except ImportError:                                                                                   
+    wandb = None                                                                                      
+                  
 
 def save_checkpoint(cfg: CheckpointConfig, trainer, epoch_itr, val_loss):
     from fairseq import meters
@@ -183,6 +188,8 @@ def save_checkpoint(cfg: CheckpointConfig, trainer, epoch_itr, val_loss):
                 os.remove(old_chk)
             elif PathManager.exists(old_chk):
                 PathManager.rm(old_chk)
+    
+    wandb.save(os.path.join(cfg.save_dir, "checkpoint_best.pt")) 
 
 
 def load_checkpoint(cfg: CheckpointConfig, trainer, **passthrough_args):

@@ -29,7 +29,8 @@ done
 echo "Thresholding resume data to cutoff year (2014)..."
 python preprocess/convert_sequences_for_forecasting.py \
   --data-dir $RESUME_DATA_DIR \
-  --dataset-name resumes
+  --dataset-name resumes \
+  --cutoff-year 2014
 echo "...done."
 
 # The test set contains the original test set.
@@ -41,7 +42,8 @@ cp $RESUME_DATA_DIR/test.location $RESUME_DATA_DIR/forecast_resumes/test.locatio
 echo "Thresholding survey data to cutoff year (2014)..."
 python preprocess/convert_sequences_for_forecasting.py \
   --data-dir $SURVEY_DATA_DIR \
-  --dataset-name $SURVEY_DATASET_NAME
+  --dataset-name $SURVEY_DATASET_NAME \
+  --cutoff-year 2014
 echo "...done."
 
 # The test set combines the original train, valid, and test sets.

@@ -13,9 +13,12 @@ parser.add_argument("--data-dir",
 parser.add_argument("--dataset-name", 
                     type=str,
                     help="Name of survey dataset (e.g. 'resumes' or 'nlsy').")
+parser.add_argument("--cutoff-year",
+                    type=int,
+                    help="Year to cut off training.")
 args = parser.parse_args()
 
-cutoff_year = 2014
+cutoff_year = args.cutoff_year
 
 data_dir = args.data_dir
 save_dir = os.path.join(args.data_dir, "forecast_{}".format(args.dataset_name))
