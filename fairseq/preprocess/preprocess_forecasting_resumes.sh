@@ -22,6 +22,6 @@ cp $RESUME_DATA_DIR/test.location $RESUME_DATA_DIR/forecast_resumes/test.locatio
 
 echo "Binarizing data..."
 
-sh preprocess/preprocess_resumes.sh \
+sh preprocess/preprocess_transfer_learning_resumes.sh \
   $RESUME_DATA_DIR/forecast_resumes \
   $BINARY_DATA_DIR

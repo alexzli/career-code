@@ -24,6 +24,10 @@ parser.add_argument("--model-name",
                     default='career',
                     help="Model name (must be one of: 'career', 'bag-of-jobs',"
                          " 'regression', or 'lstm').")
+parser.add_argument("--num-samples", 
+                    type=int,
+                    default=1000,
+                    help="Number of Monte Carlo samples.")
 parser.add_argument('--no-covariates', 
                     action='store_true',
                     help="Load model that does not use covariates.")
@@ -31,7 +35,7 @@ args = parser.parse_args()
 
 model_path = os.path.join(
   args.save_dir, 
-  'resumes/{}{}'.format(
+  'forecast-resumes/{}{}'.format(
     args.model_name, '_no_covariates' if args.no_covariates else ''))
 binary_data_path = os.path.join(args.binary_data_dir, "resumes")
 
