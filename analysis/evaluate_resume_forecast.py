@@ -124,19 +124,19 @@ for eval_index, sample in enumerate(itr):
         locations = sample['net_input']['locations'][batch_ind].repeat(
           [num_samples, 1])
         # Simulate each year, one-by-one.
-        num_unseen_years = sum(all_years >= cutoff_year)
+        num_unseen_years = sum(all_years > cutoff_year)
         for simulated_year in range(first_simulated_index, 
                                     first_simulated_index + num_unseen_years):
           true_job = sample['target'][batch_ind][simulated_year].item()
           output = model.model.decoder.forward(
             prev_tokens, years=years, educations=educations, locations=locations)
-          lprobs = model.model.get_normalized_probs(
-            output, log_probs=True, two_stage=two_stage, 
+          probs = model.model.get_normalized_probs(
+            output, log_probs=False, two_stage=two_stage, 
             prev_tokens=prev_tokens)[:, -1]
           # Sample next job from distribution.
-          next_job_samples = torch.multinomial(lprobs, num_samples=1)
-          average_prob = lprobs.mean(0)
-          all_nll.setdefault(simulated_year, []).append(-np.log(average_prob[true_job].item()))
+          next_job_samples = torch.multinomial(probs, num_samples=1)
+          average_prob = probs.mean(0)
+          all_nll.setdefault(all_years[simulated_year], []).append(-np.log(average_prob[true_job].item()))
           # Update for next year.
           prev_tokens = torch.cat([prev_tokens, next_job_samples], -1)
           years = sample['net_input']['years'][batch_ind][
@@ -144,7 +144,7 @@ for eval_index, sample in enumerate(itr):
           educations = sample['net_input']['educations'][batch_ind][
             :(simulated_year + 2)][None].repeat([num_samples, 1])
 
-perplexities = {year: np.exp(np.mean(nll)) for year, nll in all_nll}
+perplexities = {year: np.exp(np.mean(nll)) for year, nll in all_nll.items()}
 
 print("..................")
 print("Test-set results for {}{}, model loaded from '{}'".format(
