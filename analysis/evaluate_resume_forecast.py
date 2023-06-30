@@ -37,7 +37,7 @@ model_path = os.path.join(
   args.save_dir, 
   'forecast-resumes/{}{}'.format(
     args.model_name, '_no_covariates' if args.no_covariates else ''))
-binary_data_path = os.path.join(args.binary_data_dir, "resumes")
+binary_data_path = os.path.join(args.binary_data_dir, "forecast-resumes")
 
 # Load model.
 if args.model_name == 'career':
