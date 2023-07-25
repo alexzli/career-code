@@ -47,8 +47,6 @@ if args.model_name == 'career':
     data_name_or_path=binary_data_path)
 
 # Move model to GPU and set to eval mode.
-if torch.cuda.is_available():
-  model.cuda()
 model.eval()
 model.model = model.models[0]
 two_stage = model.model.decoder.args.two_stage
@@ -88,6 +86,9 @@ max_possible_year = max(
   [int(x) for x in model.task._year_dictionary.symbols if x.isdigit()])
 
 all_nll = {}
+new_token_nll = []
+non_consecutive_repeat_nll = []
+consecutive_repeat_nll = []
 
 for eval_index, sample in enumerate(itr):
   print("Evaluating {}/{}...".format(eval_index, itr.total))
@@ -137,6 +138,13 @@ for eval_index, sample in enumerate(itr):
           next_job_samples = torch.multinomial(probs, num_samples=1)
           average_prob = probs.mean(0)
           all_nll.setdefault(all_years[simulated_year], []).append(-np.log(average_prob[true_job].item()))
+          if simulated_year == first_simulated_index:
+            if true_job not in sample['target'][batch_ind][:simulated_year]:
+              new_token_nll.append(-np.log(average_prob[true_job].item()))
+            elif true_job != sample['target'][batch_ind][simulated_year - 1]:
+              non_consecutive_repeat_nll.append(-np.log(average_prob[true_job].item()))
+            else:
+              consecutive_repeat_nll.append(-np.log(average_prob[true_job].item()))
           # Update for next year.
           prev_tokens = torch.cat([prev_tokens, next_job_samples], -1)
           years = sample['net_input']['years'][batch_ind][
@@ -145,6 +153,9 @@ for eval_index, sample in enumerate(itr):
             :(simulated_year + 2)][None].repeat([num_samples, 1])
 
 perplexities = {year: np.exp(np.mean(nll)) for year, nll in all_nll.items()}
+new_token_perplexity = np.exp(np.mean(new_token_nll))
+non_consecutive_repeat_perplexity = np.exp(np.mean(non_consecutive_repeat_nll))
+consecutive_repeat_perplexity = np.exp(np.mean(consecutive_repeat_nll))
 
 print("..................")
 print("Test-set results for {}{}, model loaded from '{}'".format(
@@ -153,4 +164,10 @@ print("Test-set results for {}{}, model loaded from '{}'".format(
 print("..................")
 for year, ppl in perplexities.items():
   print("Year {} perplexity: {:.2f}".format(year, ppl))
+print("..................")
+print("New token perplexity: {:.2f}".format(new_token_perplexity))
+print("Non-consecutive repeat perplexity: {:.2f}".format(
+  non_consecutive_repeat_perplexity))
+print("Consecutive repeat perplexity: {:.2f}".format(
+  consecutive_repeat_perplexity))
 print("..................")
