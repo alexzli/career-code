@@ -47,6 +47,8 @@ if args.model_name == 'career':
     data_name_or_path=binary_data_path)
 
 # Move model to GPU and set to eval mode.
+if torch.cuda.is_available():
+  model.cuda()
 model.eval()
 model.model = model.models[0]
 two_stage = model.model.decoder.args.two_stage
